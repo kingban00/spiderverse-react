@@ -16,12 +16,11 @@ async function getData(): Promise<{ data: IHeroData[] }> {
 
 export default async function Home(){
   const res = await getData();
-  console.log(res.data)
 
   return(
     <main className={ styles.main }>
       <HeroesList
-        heroes={res.data}
+        heroes={res}
       />
     </main>
   )

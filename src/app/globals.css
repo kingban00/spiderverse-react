@@ -1,4 +1,4 @@
-@import "./variables.scss"
+/* @import "./variables.scss"; */
 
 :root {
   height: 100vh;
@@ -6,7 +6,8 @@
 
   &::before {
     content: "";
-    background: $background;
+    /* background: $background; */
+    background: linear-gradient(#0069e3, #0056ba);
     height: 100%;
     width: 100%;
     position: absolute;
@@ -15,10 +16,12 @@
 }
 
 body {
-  color: $text-color;
+  /* color: $text-color; */
+  color: #fff;
   height: calc(100vh - 3.5rem);
   margin: auto;
-  max-width: $max-width;
+  /* max-width: $max-width; */
+  max-width: 1920px;
   overflow: hidden;
   position: relative;
 }
