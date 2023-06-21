@@ -54,7 +54,7 @@ export default function HeroDetails({ data }: IProps) {
             </div>
 
             <div className={styles.details}>
-                <h2 className={styles.subtitle}>Primeira Aparição</h2>
+                <h2 style={{marginBottom: 12}} className={styles.subtitle}>Primeira Aparição</h2>
                 <Image 
                     src={`/spiders/${id}-comic-book.png`}
                     alt={`Primeira aparição nos quadrinhos de ${name} no universo ${universe}`}

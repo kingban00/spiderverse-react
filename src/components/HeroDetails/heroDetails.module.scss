@@ -4,7 +4,7 @@
 }
 
 .subtitle{
-    font-size: 1.5rem;
+    font-size: 1rem;
     text-transform: uppercase;
     font-weight: 700;
     margin: 0;
@@ -14,12 +14,13 @@
     border-top: 1px solid rgba(255, 255, 255, 0.5);
     margin: 1rem 0;
     padding: 1rem 0;
+    text-align: left;
     width: 70%;
 
     .table{
-        .td{
+        td{
             font-weight: 600;
-            padding-right: 2rem;
+            padding-left: 2rem;
         }
 
         .label {
