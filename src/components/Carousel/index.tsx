@@ -2,12 +2,13 @@
 
 import HeroDetails from "../HeroDetails";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import styles from "./carousel.module.scss";
 
 import { IHeroData } from "@/interfaces/heroes"
 import HeroePicture from "../HeroPicture";
+import { start } from "repl";
 
 
 interface IProps{
@@ -22,6 +23,8 @@ enum Direction {
 }
 
 export default function Carousel({ heroes, activatedId }: IProps) {
+   
+    // ################################ Variables ################################
 
     // Controla os itens visíveis no carrossel	
     const [selectedHeroes, setSelectedHeroes] = useState<IHeroData[] | null>(null);
@@ -30,6 +33,25 @@ export default function Carousel({ heroes, activatedId }: IProps) {
     const [activeHero, setActiveHero] = useState(
         heroes.findIndex((hero) => hero.id === activatedId) - 1
     )
+
+     // Som de transição
+     const transitionSound = useMemo(() => new Audio("/songs/transition.mp3"), []);
+
+     // Voz de cada herói
+     const heroVoices: Record<string, HTMLAudioElement> = useMemo(() => ({
+         "spider-man-616": new Audio("/songs/spider-man-616.mp3"),
+         "mulher-aranha-65": new Audio("/songs/mulher-aranha-65.mp3"),
+         "spider-man-1610": new Audio("/songs/spider-man-1610.mp3"),
+         "sp-dr-14512": new Audio("/songs/sp-dr-14512.mp3"),
+         "spider-ham-8311": new Audio("/songs/spider-ham-8311.mp3"),
+         "spider-man-90214": new Audio("/songs/spider-man-90214.mp3"),
+         "spider-man-928": new Audio("/songs/spider-man-928.mp3"),
+     }), []);
+
+    //  Armazena a posição inicial do carrossel na posição x
+    const [initialInteraction, setInitialInteraction] = useState<number>(0);
+
+    // ################################ Hooks ################################
 
     // Atualiza o selectedHeroes ativo no carrossel sempre que o activeHero mudar
     useEffect(() => {
@@ -65,6 +87,23 @@ export default function Carousel({ heroes, activatedId }: IProps) {
         }
     }, [selectedHeroes]);
 
+    // Reproduz efeitos sonoros ao rotacionar o carrossel
+    useEffect(() => {
+        if(!selectedHeroes) return;
+
+        transitionSound.play();
+        const voice = heroVoices[selectedHeroes[Direction.MIDDLE].id];
+
+        if(voice) {
+            voice.currentTime = 0;
+            voice.volume = 0.3;
+            voice.play();
+        }
+    },[selectedHeroes, transitionSound, heroVoices])
+
+
+    // ################################ Functions ################################
+
     
     // Altera herói ativo no carrossel
     // +1 rotaciona no sentido horário
@@ -76,21 +115,49 @@ export default function Carousel({ heroes, activatedId }: IProps) {
             setActiveHero(activeHero + 1);
         }
     }
-//   const handleChangeActiveHero = (newDirection: number) => {
-//     setActiveHero((prevActiveIndex) => prevActiveIndex + newDirection);
-//   };
 
-//   if (!visibleItems) {
-//     return null;
-//   }
+    // OnDragStart (mouse): Armazena a posição inicial do mouse
+    const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
+        setInitialInteraction(event.clientX);
+    };
+
+    // OnDragEnd (mouse): Calcula a direção do movimento do mouse e altera o herói ativo
+    const handleDragEnd = (event: React.DragEvent<HTMLDivElement>) => {
+        if(!initialInteraction) return null;
+
+        const finalInteraction = event.clientX;
+        const direction = finalInteraction > initialInteraction ? "left" : "right";
+        handleChangeActiveHero(direction);
+    };
+
+    // OnTouchStart (touch): Armazena a posição inicial do toque
+    const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+        setInitialInteraction(event.touches[0].clientX);
+    };
+    
+    // OnTouchEnd (touch): Calcula a direção do movimento do toque e altera o herói ativo
+    const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+        if(!initialInteraction) return null;
+
+        const finalInteraction = event.changedTouches[0].clientX;
+        const direction = finalInteraction > initialInteraction ? "left" : "right";
+        handleChangeActiveHero(direction);
+    };
+    
     if (!selectedHeroes) return null;
+
+    // ################################ Render ################################
 
     return (
         <div className={styles.container}>
             <div className={styles.carousel}>
                 <div 
                     className={styles.wrapper}
-                    onClick={() => handleChangeActiveHero("left")}
+                    // onClick={() => handleChangeActiveHero("left")}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={handleTouchEnd}
                 >
                     <AnimatePresence mode="popLayout">
                         {selectedHeroes?.map((hero, index) => (
